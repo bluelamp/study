@@ -71,9 +71,14 @@ namespace ConsoleApp1
         }
 
     }
-
+    
     class Program
     {
+        /// <summary>
+        /// 각각 소수값들을 출력하는 함수.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="arg"></param>
         static void PrintPrime(object sender, CallbackArg arg)
         {
             Console.Write((arg as PrimeCallBackArg).Prime_ + ", ");
@@ -81,27 +86,56 @@ namespace ConsoleApp1
 
         static int Sum;
 
+        /// <summary>
+        /// 서브기능으로 모든 소수들의 값을 합치는 함수입니다.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="arg"></param>
         static void SumPrime(object sender, CallbackArg arg)
         {
             Sum += (arg as PrimeCallBackArg).Prime_;
         }
 
+        /// <summary>
+        /// 프로그램 메인
+        /// </summary>
+        /// <param name="args"></param>
         static void Main(string[] args)
         {
             PrimeGenerator gen = new PrimeGenerator();
 
+            /// 대리자함수로 등록하는 과정. 이벤트가 발생할때, 해당 함수가 실행될 것임.
             PrimeGenerator.PrimeDelegate callprint = PrintPrime;
             gen.AddDelegate(callprint);
-
             PrimeGenerator.PrimeDelegate callsum = SumPrime;
             gen.AddDelegate(callsum);
 
-            gen.Run(10);
-            Console.WriteLine();
-            Console.WriteLine(Sum);
+            // 사용자의 콘솔입력을 받아서 실행됨. 숫자가 아닌 잘못된 값을 받았을때 계속 Loop됨.
+            //Console.WriteLine("범위값을 설정하여 주십시오.");
+            string input = string.Empty;
+            int num;
+            while(int.TryParse(input, out num) == false) {
+                Console.WriteLine("범위값을 설정하여 주십시오.");
+                input = Console.ReadLine();
+            }
 
+            Console.WriteLine("0~{0} 사이의 소수들을 구합니다.",num);
+            gen.Run(num);
+
+            Console.WriteLine();
+            Console.WriteLine("모든 소스들의 합은 {0} 입니다.", Sum);
+
+            // SumPrime 대리자 함수등록를 해지합니다. 더이상 이 이벤트발생시, 해당함수가 실행되지 않습니다. PrintPrime 대리자는 아직 남아있어 그대로 작동합니다.
             gen.RemoveDelegate(callsum);
-            gen.Run(15);
+            gen.Run(99);
+            Console.WriteLine();
+            Console.Write("모든 소스들의 합은 ");
+            Console.WriteLine("{0} 입니다.", Sum);
+
+            // 아무키나 입력하게 되면, 프로그램을 종료합니다.
+            Console.WriteLine();
+            Console.WriteLine("프로그램을 끝냅니다.");
+            Console.ReadLine();
         }
     }
 }
